@@ -12,7 +12,6 @@ import kotlin.system.measureTimeMillis
 
 class MainActivity : AppCompatActivity() {
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -48,20 +47,14 @@ class MainActivity : AppCompatActivity() {
         withContext(IO) {
 
             val executionTime = measureTimeMillis {
-
-//                 Async/Await returning a value
-//                val result1 = async {
-//                    Log.d("Coroutine:", "debug: launching job1: ${Thread.currentThread().name}")
-//                    getResult1FromApi()
-//                }.await()
-
-
                 // Classic job/launch
                 var result1 = ""
                 val job1 = launch {
                     Log.d("Coroutine:", "debug: launching job1: ${Thread.currentThread().name}")
                     result1 = getResult1FromApi()
                 }
+
+                //wait for completion of the launched coroutine
                 job1.join()
 
 
@@ -69,10 +62,17 @@ class MainActivity : AppCompatActivity() {
                     Log.d("Coroutine:", "debug: launching job2: ${Thread.currentThread().name}")
                     getResult2FromApi(result1)
                 }.await()
-                Log.d("Coroutine:", "Got result2: $result2")
+                Log.d(LOG_TAG, "Got result2: $result2")
 
+                //  Async/Await returning a value
+                val result3 = async {
+                    Log.d(LOG_TAG, "debug: launching job3: ${Thread.currentThread().name}")
+                    getResult3FromApi()
+                }.await()
+
+                Log.d(LOG_TAG, result3)
             }
-            Log.d("Coroutine:", "debug: job1 and job2 are complete. It took ${executionTime} ms")
+            Log.d(LOG_TAG, "debug: job1 and job2 are complete. It took ${executionTime} ms")
         }
     }
 
@@ -84,6 +84,15 @@ class MainActivity : AppCompatActivity() {
     private suspend fun getResult2FromApi(result1: String): String {
         delay(1700)
         return "Result #2"
+    }
+
+    private suspend fun getResult3FromApi(): String {
+        delay(1000)
+        return "Result #3"
+    }
+
+    companion object {
+        const val LOG_TAG = "Coroutine:"
     }
 
 }

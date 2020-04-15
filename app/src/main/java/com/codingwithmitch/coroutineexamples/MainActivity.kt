@@ -2,6 +2,7 @@ package com.codingwithmitch.coroutineexamples
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
@@ -21,38 +22,42 @@ class MainActivity : AppCompatActivity() {
                 fakeApiRequest()
             }
         }
-        
+
     }
 
-    private fun setNewText(input: String){
-        val newText = text.text.toString() + "\n$input"
+    private fun setNewText(input: String) {
+        val newText = "${text.text}\n$input"
         text.text = newText
     }
+
     private suspend fun setTextOnMainThread(input: String) {
-        withContext (Main) {
+        withContext(Main) {
             setNewText(input)
         }
     }
 
     private suspend fun fakeApiRequest() {
-        logThread("fakeApiRequest")
+        withContext(IO) {
+            logThread("fakeApiRequest")
 
-        val result1 = getResult1FromApi() // wait until job is done
+            val result1 = getResult1FromApi() // wait until job is done
 
-        if ( result1.equals("Result #1")) {
+            if (result1.equals("Result #1")) {
 
-            setTextOnMainThread("Got $result1")
+                setTextOnMainThread("Got $result1")
 
-            val result2 = getResult2FromApi() // wait until job is done
+                val result2 = getResult2FromApi() // wait until job is done
 
-            if (result2.equals("Result #2")) {
-                setTextOnMainThread("Got $result2")
+                if (result2.equals("Result #2")) {
+                    setTextOnMainThread("Got $result2")
+                } else {
+                    setTextOnMainThread("Couldn't get Result #2")
+                }
             } else {
-                setTextOnMainThread("Couldn't get Result #2")
+                setTextOnMainThread("Couldn't get Result #1")
             }
-        } else {
-            setTextOnMainThread("Couldn't get Result #1")
         }
+
     }
 
 
@@ -68,8 +73,8 @@ class MainActivity : AppCompatActivity() {
         return "Result #2"
     }
 
-    private fun logThread(methodName: String){
-        println("debug: ${methodName}: ${Thread.currentThread().name}")
+    private fun logThread(methodName: String) {
+        Log.d("debug:", "${methodName}: ${Thread.currentThread().name}")
     }
 
 }

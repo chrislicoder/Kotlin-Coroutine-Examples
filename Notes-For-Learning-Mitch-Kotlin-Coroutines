@@ -1,0 +1,12 @@
+Lecture 1 : https://www.youtube.com/watch?v=F63mhZk-1-Y&list=PLgCYzUzKIBE_PFBRHFB_aL5stMQg3smhL
+Kotlin Coroutines Beginner Example (Android)
+Branch: Master
+
+Courtine is the job to be done
+Thread is the place where job get done
+Many courtines could be operating at the same time inside a single thread
+
+Coroutine scope is a way to organize co-routines into groupings
+IO is for network and database process
+Main is for UI process
+Default is heavy computation
